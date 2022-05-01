@@ -13,7 +13,8 @@ public class Util {
         if (connection == null) {
             try {
                 connection = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "root", "root");
-                System.out.println("Connection to Store DB succesfull!");
+                System.out.println("Connection to DB succesfull!");
+                connection.setAutoCommit(false);
             } catch (SQLException e) {
                 System.out.println("Connection failed..." + e);
             }
