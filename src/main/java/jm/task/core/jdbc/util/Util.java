@@ -1,24 +1,30 @@
 package jm.task.core.jdbc.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import jm.task.core.jdbc.model.User;
+import org.hibernate.HibernateException;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 
 public class Util {
-
-    private static Connection connection;
-
-    public static Connection getConnection() {
-        // реализуйте настройку соеденения с БД
-        if (connection == null) {
+    private static SessionFactory sessionFactory;
+    
+    public static SessionFactory getConnection() {
+        if (sessionFactory == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "root", "root");
-                System.out.println("Connection to DB succesfull!");
-                connection.setAutoCommit(false);
-            } catch (SQLException e) {
-                System.out.println("Connection failed..." + e);
+                Configuration configuration = new Configuration()
+                        .setProperty("hibernate.connection.url", "jdbc:mysql://localhost/mydb")
+                        .setProperty("hibernate.connection.username", "root")
+                        .setProperty("hibernate.connection.password", "root")
+                        .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
+                        .addAnnotatedClass(User.class);
+                StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
+                        .applySettings(configuration.getProperties());
+                sessionFactory = configuration.buildSessionFactory(builder.build());
+            } catch (HibernateException e) {
+                e.printStackTrace();
             }
         }
-        return connection;
+        return sessionFactory;
     }
 }
